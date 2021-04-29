@@ -15,7 +15,12 @@ module.exports = {
     },
     // plugins: [],
     rules: {
-        'no-console': 'off', // "warn" // "off"
+        'no-console': 'off',
+        'func-names': 'off',
+        'no-underscore-dangle': 'off',
+        'consistent-return': 'off',
+        'jest/expect-expect': 'off',
+        'security/detect-object-injection': 'off',
     },
     settings: {},
 };
