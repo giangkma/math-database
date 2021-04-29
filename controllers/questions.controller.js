@@ -1,46 +1,47 @@
-const Question = require("../models/question.model");
+const { httpStatus } = require('../config');
+const questionsService = require('../service/questions.service');
 
-module.exports.getAll = async (req, res) => {
+const getAllQuestions = async (req, res) => {
     const { className } = req.query;
-    let result = null;
-    if (!className) {
-        result = await Question.find({});
-    } else {
-        result = await Question.find({ className: className });
-    }
-    console.log(result);
-    res.status(200).send(result);
-};
-module.exports.getById = async (req, res) => {
-    const { id } = req.params;
-    const result = await Question.findById(id);
-    if (!result) res.status(400).send({ detail: "Question Not Found" });
-    res.status(200).send(result);
+    const result = await questionsService.getAllQuestions(className);
+    res.status(httpStatus.SUCESS).send({
+        data: result,
+        total: result.length,
+    });
 };
 
-module.exports.addQuestion = async (req, res) => {
-    const { className, question, correctAnswer, answer } = req.body;
-    const result = await Question.create({
-        className: className,
-        question: question,
-        correctAnswer: correctAnswer,
-        answer: answer,
-    });
-    if (!result) res.status(500).send({ detail: "Server error" });
-    res.status(200).send(result);
+const getQuestionById = async (req, res) => {
+    const { id } = req.params;
+    const result = await questionsService.getQuestionById(id);
+    res.status(httpStatus.SUCESS).send(result);
 };
-module.exports.editQuestion = async (req, res) => {
+
+const addQuestion = async (req, res) => {
+    try {
+        const result = await questionsService.addQuestion(req.body);
+        res.status(httpStatus.SUCESS).send(result);
+    } catch (error) {
+        res.status(httpStatus.FAIL).send(error);
+    }
+};
+
+const editQuestion = async (req, res) => {
     const { id } = req.params;
     const newQuestion = req.body;
-    const result = await Question.findByIdAndUpdate(id, newQuestion, {
-        new: true,
-    });
-    if (!result) res.status(500).send({ detail: "Server error" });
-    res.status(200).send(result);
+    const result = await questionsService.editQuestion(id, newQuestion);
+    res.status(httpStatus.SUCESS).send(result);
 };
-module.exports.deleteQuestion = async (req, res) => {
+
+const removeQuestion = async (req, res) => {
     const { id } = req.params;
-    const result = await Question.findByIdAndDelete(id);
-    if (!result) res.status(500).send({ detail: "Server error" });
-    res.status(200).send({});
+    await questionsService.removeQuestion(id);
+    res.status(httpStatus.SUCESS).send({});
+};
+
+module.exports = {
+    getAllQuestions,
+    getQuestionById,
+    addQuestion,
+    editQuestion,
+    removeQuestion,
 };
