@@ -3,8 +3,12 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const questionsRoute = require('./routes/questions.routes');
+const authRoute = require('./routes/auth.routes');
+const ranksRoute = require('./routes/ranks.routes');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
+const authMiddleware = require('./middlewares/auth');
 
 mongoose.connect(process.env.DB_MONGOO);
 
@@ -17,7 +21,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/auth', authRoute);
+
+app.use(authMiddleware.isAuth);
 app.use('/questions', questionsRoute);
+app.use('/ranks', ranksRoute);
 
 const server = app.listen(port, () => {
     console.log(`Example app listening atss http://localhost:${port}`);

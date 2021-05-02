@@ -6,12 +6,12 @@ const jwt = require('jsonwebtoken');
  * @param secretSignature
  * @param tokenLife
  */
-let generateToken = (user, secretSignature, tokenLife) => {
+const generateToken = (user, secretSignature, tokenLife) => {
     return new Promise((resolve, reject) => {
         const userData = {
             _id: user._id,
+            role: user.role,
             name: user.name,
-            email: user.email,
         };
         jwt.sign(
             { data: userData },
@@ -35,18 +35,18 @@ let generateToken = (user, secretSignature, tokenLife) => {
  * @param {*} token
  * @param {*} secretKey
  */
-let verifyToken = (token, secretKey) => {
+const verifyToken = (token, secretKey) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, secretKey, (error, decoded) => {
             if (error) {
                 return reject(error);
             }
-            resolve(decoded);
+            resolve(decoded.data);
         });
     });
 };
 
 module.exports = {
-    generateToken: generateToken,
-    verifyToken: verifyToken,
+    generateToken,
+    verifyToken,
 };

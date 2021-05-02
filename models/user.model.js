@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { roles } = require('../config');
+const bcrypt = require('bcryptjs');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -22,9 +22,29 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        enum: roles,
         default: 'student',
     },
+    score: {
+        type: Array,
+        default: [0, 0, 0, 0, 0],
+    },
+});
+/**
+ * Check if password matches the user's password
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
+userSchema.methods.isPasswordMatch = async function (password) {
+    const user = this;
+    return bcrypt.compare(password, user.password);
+};
+
+userSchema.pre('save', async function (next) {
+    const user = this;
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8);
+    }
+    next();
 });
 
 const User = mongoose.model('User', userSchema);

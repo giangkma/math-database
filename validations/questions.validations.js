@@ -15,7 +15,21 @@ const paramsId = {
     }),
 };
 
+const checkAnswer = {
+    body: Joi.object().keys({
+        answer: Joi.string().required(),
+    }),
+};
+
+const paramsClassName = {
+    params: Joi.object().keys({
+        className: Joi.number().required().min(1).max(5),
+    }),
+};
+
 module.exports = {
     paramsId,
     bodyQuestion,
+    checkAnswer,
+    paramsClassName,
 };
