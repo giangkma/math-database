@@ -7,7 +7,7 @@ const login = {
     }),
 };
 
-const resgister = {
+const register = {
     body: Joi.object().keys({
         name: Joi.string().required(),
         username: Joi.string().required(),
@@ -17,5 +17,5 @@ const resgister = {
 
 module.exports = {
     login,
-    resgister,
+    register,
 };

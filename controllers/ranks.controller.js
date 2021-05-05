@@ -10,6 +10,7 @@ const getRanksInClass = async (req, res) => {
             const score = student.score[className - 1];
             if (score !== 0)
                 result.push({
+                    _id: student._id,
                     name: student.name,
                     score: student.score[className - 1],
                 });

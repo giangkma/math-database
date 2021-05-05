@@ -1,6 +1,6 @@
 const User = require('../models/user.model');
 
-const resgister = (payload) => {
+const register = (payload) => {
     return new Promise((resolve, reject) => {
         const { username, password, name } = payload;
         const result = User.create({
@@ -15,5 +15,5 @@ const resgister = (payload) => {
 };
 
 module.exports = {
-    resgister,
+    register,
 };

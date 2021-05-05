@@ -6,10 +6,7 @@ const getAllQuestions = async (req, res) => {
     try {
         const { className } = req.query;
         const result = await questionsService.getAllQuestions(className);
-        res.status(httpStatus.SUCCESS).send({
-            data: result,
-            total: result.length,
-        });
+        res.status(httpStatus.SUCCESS).send(result);
     } catch (error) {
         res.status(httpStatus.FAIL).send(error);
     }
@@ -61,7 +58,7 @@ const checkAnswer = async (req, res) => {
         const { answer } = req.body;
         const userId = req.userInfo._id;
         const question = await questionsService.getQuestionById(id);
-
+        console.log(userId);
         const { className } = question;
         if (question.correctAnswer === answer) {
             const user = await userService.getUserById(userId);
@@ -77,6 +74,7 @@ const checkAnswer = async (req, res) => {
         }
         res.status(httpStatus.SUCCESS).send({
             correct: false,
+            correctAnswer: question.correctAnswer,
         });
     } catch (error) {
         res.status(httpStatus.FAIL).send({ error: error.message });

@@ -3,7 +3,7 @@ const User = require('../models/user.model');
 const getUserByUsername = (username) => {
     return new Promise((resolve, reject) => {
         const result = User.findOne({ username });
-        if (!result) return reject('User not found');
+        if (!result) return reject('Người dùng không tồn tại');
         resolve(result);
     });
 };

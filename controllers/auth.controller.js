@@ -2,6 +2,7 @@ const jwtHelper = require('../helpers/jwt.helper');
 const { httpStatus } = require('../config');
 const authService = require('../service/auth.service');
 const userService = require('../service/user.service');
+const { fillterDataUser } = require('../helpers/functions');
 
 // Thời gian sống của token
 const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || '3d';
@@ -19,15 +20,20 @@ const login = async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await userService.getUserByUsername(username);
+        if (!user) throw new Error('Sai tên đăng nhập !');
         if (!(await user.isPasswordMatch(password))) {
             throw new Error('Mật khẩu không đúng !');
         }
+        const dataUserFilter = fillterDataUser(user);
         const accessToken = await jwtHelper.generateToken(
-            user,
+            dataUserFilter,
             accessTokenSecret,
             accessTokenLife,
         );
-        return res.status(httpStatus.SUCCESS).send({ accessToken });
+        return res.status(httpStatus.SUCCESS).send({
+            accessToken,
+            information: dataUserFilter,
+        });
     } catch (error) {
         return res
             .status(httpStatus.UNAUTHORIZED)
@@ -35,11 +41,19 @@ const login = async (req, res) => {
     }
 };
 
-const resgister = async (req, res) => {
+const register = async (req, res) => {
     try {
-        const result = await authService.resgister(req.body);
-
-        return res.status(httpStatus.SUCCESS).send(result);
+        const result = await authService.register(req.body);
+        const dataUserFilter = fillterDataUser(result);
+        const accessToken = await jwtHelper.generateToken(
+            dataUserFilter,
+            accessTokenSecret,
+            accessTokenLife,
+        );
+        return res.status(httpStatus.SUCCESS).send({
+            accessToken,
+            information: dataUserFilter,
+        });
     } catch (error) {
         return res.status(httpStatus.FAIL).send({ error });
     }
@@ -49,13 +63,8 @@ const getUserInfo = async (req, res) => {
     try {
         const { _id } = req.userInfo;
         const user = await userService.getUserById(_id);
-        return res.status(httpStatus.SUCCESS).send({
-            _id: user._id,
-            role: user.role,
-            name: user.name,
-            score: user.score,
-            username: user.username,
-        });
+        const result = fillterDataUser(user);
+        return res.status(httpStatus.SUCCESS).send(result);
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send({ error });
     }
@@ -63,6 +72,6 @@ const getUserInfo = async (req, res) => {
 
 module.exports = {
     login,
-    resgister,
+    register,
     getUserInfo,
 };

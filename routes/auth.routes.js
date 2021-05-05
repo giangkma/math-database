@@ -8,9 +8,9 @@ const authValidation = require('../validations/auth.validation');
 router.post('/login', validate(authValidation.login), authController.login);
 
 router.post(
-    '/resgister',
-    validate(authValidation.resgister),
-    authController.resgister,
+    '/register',
+    validate(authValidation.register),
+    authController.register,
 );
 
 router.get('/getUserInfo', authMiddleware.isAuth, authController.getUserInfo);

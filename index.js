@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8888;
 const questionsRoute = require('./routes/questions.routes');
 const authRoute = require('./routes/auth.routes');
 const ranksRoute = require('./routes/ranks.routes');
@@ -17,9 +17,10 @@ mongoose.connect(process.env.DB_MONGOO);
 //     res.header('Access-Control-Allow-Origin', '*');
 //     next();
 // };
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cors());
 
 app.use('/auth', authRoute);
 
