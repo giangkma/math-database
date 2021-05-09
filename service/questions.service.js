@@ -35,6 +35,24 @@ const addQuestion = (payload) => {
     });
 };
 
+const addQuestionsXlsx = (arrayQuestion) => {
+    return new Promise((resolve, reject) => {
+        const result = [];
+        arrayQuestion.map((question) => {
+            const res = Question.create({
+                question: question.question,
+                answer: question.answer,
+                correctAnswer: question.correctAnswer,
+                className: question.className,
+            });
+            result.push(res);
+        });
+        if (result.length === 0)
+            return reject('Lỗi! Hãy kiểm tra lại các câu hỏi !');
+        resolve(result);
+    });
+};
+
 const editQuestion = (id, payload) => {
     return new Promise((resolve, reject) => {
         const result = Question.findByIdAndUpdate(id, payload, {
@@ -57,6 +75,7 @@ module.exports = {
     getAllQuestions,
     getQuestionById,
     addQuestion,
+    addQuestionsXlsx,
     editQuestion,
     removeQuestion,
 };

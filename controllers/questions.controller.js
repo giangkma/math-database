@@ -1,6 +1,7 @@
 const { httpStatus } = require('../config');
 const questionsService = require('../service/questions.service');
 const userService = require('../service/user.service');
+const xlsx = require('xlsx');
 
 const getAllQuestions = async (req, res) => {
     try {
@@ -58,7 +59,6 @@ const checkAnswer = async (req, res) => {
         const { answer } = req.body;
         const userId = req.userInfo._id;
         const question = await questionsService.getQuestionById(id);
-        console.log(userId);
         const { className } = question;
         if (question.correctAnswer === answer) {
             const user = await userService.getUserById(userId);
@@ -77,7 +77,62 @@ const checkAnswer = async (req, res) => {
             correctAnswer: question.correctAnswer,
         });
     } catch (error) {
-        res.status(httpStatus.FAIL).send({ error: error.message });
+        res.status(httpStatus.FAIL).send({ error });
+    }
+};
+
+const addQuestionsXlsx = async (req, res) => {
+    try {
+        const { file } = req;
+        const { id } = req.params;
+        const path = `${process.cwd()}/questionFile`;
+        const workbook = xlsx.readFile(`${path}/${file.filename}`);
+        const sheet_name_list = workbook.SheetNames;
+        const listQuestion = xlsx.utils.sheet_to_json(
+            workbook.Sheets[sheet_name_list[0]],
+        );
+        const newListQuestion = [];
+        let sumQuestionsInvalid = 0;
+
+        listQuestion.map((item) => {
+            const answer = [];
+            const {
+                answerA,
+                answerB,
+                answerC,
+                answerD,
+                question,
+                correctAnswer,
+            } = item;
+            if (answerA) {
+                answer.push(`${answerA}`);
+            }
+            if (answerB) {
+                answer.push(`${answerB}`);
+            }
+            if (answerC) {
+                answer.push(`${answerC}`);
+            }
+            if (answerD) {
+                answer.push(`${answerD}`);
+            }
+            if (answer.length > 1 && correctAnswer && question) {
+                item.className = id;
+                item.answer = answer;
+                newListQuestion.push(item);
+                return;
+            }
+            sumQuestionsInvalid = sumQuestionsInvalid + 1;
+        });
+        await questionsService.addQuestionsXlsx(newListQuestion);
+
+        res.status(httpStatus.SUCCESS).send({
+            success: true,
+            invalid: sumQuestionsInvalid,
+            valid: newListQuestion.length,
+        });
+    } catch (error) {
+        res.status(httpStatus.FAIL).send({ error });
     }
 };
 
@@ -85,6 +140,7 @@ module.exports = {
     getAllQuestions,
     getQuestionById,
     addQuestion,
+    addQuestionsXlsx,
     editQuestion,
     removeQuestion,
     checkAnswer,
