@@ -5,6 +5,7 @@ const port = process.env.PORT || 8888;
 const questionsRoute = require('./routes/questions.routes');
 const authRoute = require('./routes/auth.routes');
 const ranksRoute = require('./routes/ranks.routes');
+const reportRoute = require('./routes/report.routes');
 
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -27,6 +28,7 @@ app.use('/auth', authRoute);
 app.use(authMiddleware.isAuth);
 app.use('/questions', questionsRoute);
 app.use('/ranks', ranksRoute);
+app.use('/report', reportRoute);
 
 const server = app.listen(port, () => {
     console.log(`Example app listening atss http://localhost:${port}`);

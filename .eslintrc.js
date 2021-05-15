@@ -21,6 +21,7 @@ module.exports = {
         'consistent-return': 'off',
         'jest/expect-expect': 'off',
         'security/detect-object-injection': 'off',
+        'no-extra-boolean-cast': 'off',
     },
     settings: {},
 };

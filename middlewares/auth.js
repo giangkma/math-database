@@ -35,7 +35,7 @@ const isAuth = async (req, res, next) => {
         next();
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).json({
-            message: 'Unauthorized.',
+            message: 'Xác thực không thành công .',
         });
     }
 };
@@ -49,7 +49,7 @@ const isTeacher = async (req, res, next) => {
         next();
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).json({
-            message: 'Not have access.',
+            message: 'Bạn không có quyền !',
         });
     }
 };
@@ -63,7 +63,7 @@ const isStudent = async (req, res, next) => {
         next();
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).json({
-            message: 'Not have access.',
+            message: 'Bạn không có quyền !',
         });
     }
 };

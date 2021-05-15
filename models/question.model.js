@@ -6,6 +6,10 @@ const QuestionSchema = mongoose.Schema({
         required: true,
         trim: true,
     },
+    chapter: {
+        type: String,
+        trim: true,
+    },
     question: {
         type: String,
         required: true,

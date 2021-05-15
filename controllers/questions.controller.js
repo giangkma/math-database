@@ -2,11 +2,12 @@ const { httpStatus } = require('../config');
 const questionsService = require('../service/questions.service');
 const userService = require('../service/user.service');
 const xlsx = require('xlsx');
+const reportService = require('../service/report.service');
 
 const getAllQuestions = async (req, res) => {
     try {
-        const { className } = req.query;
-        const result = await questionsService.getAllQuestions(className);
+        const { query } = req;
+        const result = await questionsService.getAllQuestions(query);
         res.status(httpStatus.SUCCESS).send(result);
     } catch (error) {
         res.status(httpStatus.FAIL).send(error);
@@ -37,6 +38,11 @@ const editQuestion = async (req, res) => {
         const { id } = req.params;
         const newQuestion = req.body;
         const result = await questionsService.editQuestion(id, newQuestion);
+        // If this question is in the list of reports => when updating, the report will be deleted
+        const report = await reportService.getReportByQuestionId(id);
+        if (!!report.length) {
+            await reportService.removeReport(report[0].id);
+        }
         res.status(httpStatus.SUCCESS).send(result);
     } catch (error) {
         res.status(httpStatus.FAIL).send(error);
@@ -46,8 +52,8 @@ const editQuestion = async (req, res) => {
 const removeQuestion = async (req, res) => {
     try {
         const { id } = req.params;
-        await questionsService.removeQuestion(id);
-        res.status(httpStatus.SUCCESS).send({});
+        const result = await questionsService.removeQuestion(id);
+        res.status(httpStatus.SUCCESS).send(result);
     } catch (error) {
         res.status(httpStatus.FAIL).send(error);
     }
@@ -56,17 +62,20 @@ const removeQuestion = async (req, res) => {
 const checkAnswer = async (req, res) => {
     try {
         const { id } = req.params;
-        const { answer } = req.body;
+        const { answer, updateScore } = req.body;
         const userId = req.userInfo._id;
         const question = await questionsService.getQuestionById(id);
+        if (!question) {
+            throw 'Câu hỏi này không tồn tại !';
+        }
         const { className } = question;
         if (question.correctAnswer === answer) {
             const user = await userService.getUserById(userId);
-            const newScore = user.score[className - 1] + 10;
-            user.score[className - 1] = newScore;
-
-            await userService.updateScore(userId, user.score);
-
+            if (updateScore) {
+                const newScore = user.score[className - 1] + 10;
+                user.score[className - 1] = newScore;
+                await userService.updateScore(userId, user.score);
+            }
             return res.status(httpStatus.SUCCESS).send({
                 correct: true,
                 score: user.score,
@@ -103,6 +112,7 @@ const addQuestionsXlsx = async (req, res) => {
                 answerD,
                 question,
                 correctAnswer,
+                chapter,
             } = item;
             if (answerA) {
                 answer.push(`${answerA}`);
@@ -119,6 +129,7 @@ const addQuestionsXlsx = async (req, res) => {
             if (answer.length > 1 && correctAnswer && question) {
                 item.className = id;
                 item.answer = answer;
+                item.chapter = chapter || undefined;
                 newListQuestion.push(item);
                 return;
             }

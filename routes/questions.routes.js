@@ -20,7 +20,7 @@ router.get(
 router.post(
     '/',
     authMiddleware.isTeacher,
-    validate(questionsValidation.bodyQuestion),
+    validate(questionsValidation.bodyQuestions),
     questionsControllers.addQuestion,
 );
 

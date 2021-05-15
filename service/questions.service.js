@@ -1,13 +1,8 @@
 const Question = require('../models/question.model');
 
-const getAllQuestions = (className) => {
+const getAllQuestions = (query) => {
     return new Promise((resolve, reject) => {
-        let result;
-        if (!className) {
-            result = Question.find({});
-        } else {
-            result = Question.find({ className: className });
-        }
+        const result = Question.find(query);
         if (!result) return reject('Đã xảy ra lỗi !');
         resolve(result);
     });
@@ -21,17 +16,24 @@ const getQuestionById = (id) => {
     });
 };
 
-const addQuestion = (payload) => {
+const addQuestion = (arrayQuestion) => {
     return new Promise((resolve, reject) => {
-        const { className, question, correctAnswer, answer } = payload;
-        const result = Question.create({
-            className: className,
-            question: question,
-            correctAnswer: correctAnswer,
-            answer: answer,
+        const result = [];
+        arrayQuestion.map((item) => {
+            const { className, question, correctAnswer, answer, chapter } =
+                item;
+            const res = Question.create({
+                className: className,
+                question: question,
+                correctAnswer: correctAnswer,
+                answer: answer,
+                chapter: chapter || undefined,
+            });
+            result.push(res);
         });
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
+        if (result.length === 0)
+            return reject('Lỗi! Hãy kiểm tra lại các câu hỏi !');
+        resolve({ success: true, total: result.length });
     });
 };
 
@@ -44,12 +46,13 @@ const addQuestionsXlsx = (arrayQuestion) => {
                 answer: question.answer,
                 correctAnswer: question.correctAnswer,
                 className: question.className,
+                chapter: question.chapter || undefined,
             });
             result.push(res);
         });
         if (result.length === 0)
             return reject('Lỗi! Hãy kiểm tra lại các câu hỏi !');
-        resolve(result);
+        resolve({ success: true, total: result.length });
     });
 };
 
