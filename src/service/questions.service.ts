@@ -5,82 +5,70 @@ import {
 } from '../domain/question.domain';
 import Question from '../models/question.model';
 
-const getAllQuestions = (query: IQueryQuestion): Promise<IQuestion[]> => {
-    return new Promise((resolve, reject) => {
-        const result = Question.find(query);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const getAllQuestions = async (query: IQueryQuestion): Promise<IQuestion[]> => {
+    const result = Question.find(query);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const getQuestionById = (id: string): Promise<IQuestion> => {
-    return new Promise((resolve, reject) => {
-        const result = Question.findById(id);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const getQuestionById = async (id: string): Promise<IQuestion> => {
+    const result = Question.findById(id);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const addQuestion = (
+const addQuestion = async (
     arrayQuestion: IQuestion[],
 ): Promise<IResponAddQuestion> => {
-    return new Promise((resolve, reject) => {
-        const result = [];
-        arrayQuestion.map((item) => {
-            const { className, question, correctAnswer, answer, chapter } =
-                item;
-            const res = Question.create({
-                className: className,
-                question: question,
-                correctAnswer: correctAnswer,
-                answer: answer,
-                chapter: chapter || undefined,
-            });
-            result.push(res);
+    const result = [];
+    arrayQuestion.map((item) => {
+        const { className, question, correctAnswer, answer, chapter } = item;
+        const res = Question.create({
+            className: className,
+            question: question,
+            correctAnswer: correctAnswer,
+            answer: answer,
+            chapter: chapter || undefined,
         });
-        if (result.length === 0)
-            return reject('Lỗi! Hãy kiểm tra lại các câu hỏi !');
-        resolve({ success: true, total: result.length });
+        result.push(res);
     });
+    if (result.length === 0) throw 'Lỗi! Hãy kiểm tra lại các câu hỏi !';
+    return { success: true, total: result.length };
 };
 
-const addQuestionsXlsx = (
+const addQuestionsXlsx = async (
     arrayQuestion: IQuestion[],
 ): Promise<IResponAddQuestion> => {
-    return new Promise((resolve, reject) => {
-        const result = [];
-        arrayQuestion.map((question) => {
-            const res = Question.create({
-                question: question.question,
-                answer: question.answer,
-                correctAnswer: question.correctAnswer,
-                className: question.className,
-                chapter: question.chapter || undefined,
-            });
-            result.push(res);
+    const result = [];
+    arrayQuestion.map((question) => {
+        const res = Question.create({
+            question: question.question,
+            answer: question.answer,
+            correctAnswer: question.correctAnswer,
+            className: question.className,
+            chapter: question.chapter || undefined,
         });
-        if (result.length === 0)
-            return reject('Lỗi! Hãy kiểm tra lại các câu hỏi !');
-        resolve({ success: true, total: result.length });
+        result.push(res);
     });
+    if (result.length === 0) throw 'Lỗi! Hãy kiểm tra lại các câu hỏi !';
+    return { success: true, total: result.length };
 };
 
-const editQuestion = (id: string, payload: IQuestion): Promise<IQuestion> => {
-    return new Promise((resolve, reject) => {
-        const result = Question.findByIdAndUpdate(id, payload, {
-            new: true,
-        });
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
+const editQuestion = async (
+    id: string,
+    payload: IQuestion,
+): Promise<IQuestion> => {
+    const result = Question.findByIdAndUpdate(id, payload, {
+        new: true,
     });
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const removeQuestion = (id: string): Promise<IQuestion> => {
-    return new Promise((resolve, reject) => {
-        const result = Question.findByIdAndDelete(id);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const removeQuestion = async (id: string): Promise<IQuestion> => {
+    const result = Question.findByIdAndDelete(id);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
 export default {

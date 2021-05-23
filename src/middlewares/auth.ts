@@ -36,7 +36,7 @@ export const isAuth = async (
         next();
     } catch (error) {
         return res.status(statusHTTP.UNAUTHORIZED).json({
-            message: 'Xác thực không thành công .',
+            error: 'Xác thực không thành công .',
         });
     }
 };
@@ -54,7 +54,7 @@ export const isTeacher = async (
         next();
     } catch (error) {
         return res.status(statusHTTP.UNAUTHORIZED).json({
-            message: 'Bạn không có quyền !',
+            error: 'Bạn không có quyền !',
         });
     }
 };
@@ -72,7 +72,7 @@ export const isStudent = async (
         next();
     } catch (error) {
         return res.status(statusHTTP.UNAUTHORIZED).json({
-            message: 'Bạn không có quyền !',
+            error: 'Bạn không có quyền !',
         });
     }
 };

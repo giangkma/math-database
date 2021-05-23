@@ -5,60 +5,50 @@ import {
 } from '../domain/report.domain';
 import Report from '../models/report.model';
 
-const sendReport = (payload: IPayloadCreate): Promise<IReport> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.create(payload);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const sendReport = async (payload: IPayloadCreate): Promise<IReport> => {
+    const result = Report.create(payload);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const getReportByQuestionId = (questionId: string): Promise<IReport[]> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.find({
-            questionId,
-        });
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
+const getReportByQuestionId = async (
+    questionId: string,
+): Promise<IReport[]> => {
+    const result = Report.find({
+        questionId,
     });
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const updateReport = (
+const updateReport = async (
     id: string,
     payload: IPayloadUpdate,
 ): Promise<IReport> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.findByIdAndUpdate(id, payload, {
-            new: true,
-        });
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
+    const result = Report.findByIdAndUpdate(id, payload, {
+        new: true,
     });
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const getOneReport = (id: string): Promise<IReport> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.findById(id);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const getOneReport = async (id: string): Promise<IReport> => {
+    const result = Report.findById(id);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const getAllReports = (): Promise<IReport[]> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.find({});
+const getAllReports = async (): Promise<IReport[]> => {
+    const result = Report.find({});
 
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
-const removeReport = (id: string): Promise<IReport> => {
-    return new Promise((resolve, reject) => {
-        const result = Report.findByIdAndDelete(id);
-        if (!result) return reject('Đã xảy ra lỗi !');
-        resolve(result);
-    });
+const removeReport = async (id: string): Promise<IReport> => {
+    const result = Report.findByIdAndDelete(id);
+    if (!result) throw 'Đã xảy ra lỗi !';
+    return result;
 };
 
 export default {
