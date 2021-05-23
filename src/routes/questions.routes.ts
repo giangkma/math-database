@@ -49,13 +49,12 @@ const uploadExcel = multer({
             callback(null, path);
         },
         filename: (req, file, callback) => {
-            console.log(file);
             if (
-                file.mimetype ===
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-                file.mimetype === 'application/xls' ||
-                file.mimetype === 'application/x-dos_ms_excel' ||
-                file.mimetype === 'application/x-xls'
+                file.mimetype !==
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+                file.mimetype !== 'application/xls' &&
+                file.mimetype !== 'application/x-dos_ms_excel' &&
+                file.mimetype !== 'application/x-xls'
             ) {
                 return callback(new Error('Only excel are allowed.'), null);
             }
