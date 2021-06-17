@@ -1,8 +1,8 @@
-import { statusHTTP } from '../config';
-import userService from '../service/user.service';
 import { Request, Response } from 'express';
 import { IUser } from '../domain/auth.domain';
 import { IRank } from '../domain/rank.domain';
+import { responseAuthError, responseSuccess } from '../helpers/response';
+import userService from '../service/user.service';
 
 const getRanksInClass = async (
     req: Request,
@@ -22,11 +22,9 @@ const getRanksInClass = async (
                 });
         });
         result.sort((a: IRank, b: IRank) => Number(b.score) - Number(a.score));
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result)
     } catch (error) {
-        return res
-            .status(statusHTTP.UNAUTHORIZED)
-            .send({ error: error.message });
+        return responseAuthError(res, error.message ?? error)
     }
 };
 

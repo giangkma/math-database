@@ -1,12 +1,12 @@
-import { statusHTTP } from '../config';
-import authService from '../service/auth.service';
-import userService from '../service/user.service';
-import { fillterDataUser } from '../helpers/functions';
 import { Request, Response } from 'express';
-
-import { generateToken } from '../helpers/jwt';
 import { IUser } from '../domain/auth.domain';
 import { RequestUser } from '../domain/common.domain';
+import { fillterDataUser } from '../helpers/functions';
+import { generateToken } from '../helpers/jwt';
+import { responseAuthError, responseSuccess } from '../helpers/response';
+import authService from '../service/auth.service';
+import userService from '../service/user.service';
+
 
 // Thời gian sống của token
 const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || '3d';
@@ -20,7 +20,7 @@ const accessTokenSecret =
  * @param {*} req
  * @param {*} res
  */
-const login = async (req: Request, res: Response): Promise<Response> => {
+const login = async (req: Request, res: Response): Promise<void> => {
     try {
         const { username, password } = req.body;
         const user: any = await userService.getUserByUsername(username);
@@ -34,18 +34,16 @@ const login = async (req: Request, res: Response): Promise<Response> => {
             accessTokenSecret,
             accessTokenLife,
         );
-        return res.status(statusHTTP.SUCCESS).send({
+        responseSuccess(res, {
             accessToken,
             information: dataUserFilter,
         });
     } catch (error) {
-        return res
-            .status(statusHTTP.UNAUTHORIZED)
-            .send({ error: error.message });
+        responseAuthError(res, error.message ?? error)
     }
 };
 
-const register = async (req: Request, res: Response): Promise<Response> => {
+const register = async (req: Request, res: Response): Promise<void> => {
     try {
         const result: IUser = await authService.register(req.body);
         const dataUserFilter = fillterDataUser(result);
@@ -54,26 +52,26 @@ const register = async (req: Request, res: Response): Promise<Response> => {
             accessTokenSecret,
             accessTokenLife,
         );
-        return res.status(statusHTTP.SUCCESS).send({
+        responseSuccess(res, {
             accessToken,
             information: dataUserFilter,
         });
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        responseAuthError(res, error.message ?? error)
     }
 };
 
 const getUserInfo = async (
     req: RequestUser,
     res: Response,
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { id } = req.userInfo;
         const user: IUser = await userService.getUserById(id);
         const result: IUser = fillterDataUser(user);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.UNAUTHORIZED).send({ error });
+        responseAuthError(res, error.message ?? error)
     }
 };
 

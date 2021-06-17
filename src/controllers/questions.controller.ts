@@ -1,12 +1,12 @@
-import questionsService from '../service/questions.service';
-import userService from '../service/user.service';
-import xlsx from 'xlsx';
-import reportService from '../service/report.service';
 import { Request, Response } from 'express';
-import { statusHTTP } from '../config';
-import { IQuestion } from '../domain/question.domain';
-import { RequestUser } from '../domain/common.domain';
+import xlsx from 'xlsx';
 import { IUser } from '../domain/auth.domain';
+import { RequestUser } from '../domain/common.domain';
+import { IQuestion } from '../domain/question.domain';
+import { responseBadRequest, responseSuccess } from '../helpers/response';
+import questionsService from '../service/questions.service';
+import reportService from '../service/report.service';
+import userService from '../service/user.service';
 
 const getAllQuestions = async (
     req: Request,
@@ -16,9 +16,9 @@ const getAllQuestions = async (
         const { query } = req;
         if (query.chapter === 'all') delete query.chapter;
         const result = await questionsService.getAllQuestions(query);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -32,18 +32,18 @@ const getQuestionById = async (
         if (!result) {
             throw 'Câu hỏi này không tồn tại !';
         }
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
 const addQuestion = async (req: Request, res: Response): Promise<Response> => {
     try {
         const result = await questionsService.addQuestion(req.body);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -57,9 +57,9 @@ const editQuestion = async (req: Request, res: Response): Promise<Response> => {
         if (!!report.length) {
             await reportService.removeReport(report[0].id);
         }
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -70,9 +70,9 @@ const removeQuestion = async (
     try {
         const { id } = req.params;
         const result = await questionsService.removeQuestion(id);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -96,17 +96,17 @@ const checkAnswer = async (
                 user.score[Number(className) - 1] = newScore;
                 await userService.updateScore(userId, user.score);
             }
-            return res.status(statusHTTP.SUCCESS).send({
+            return responseSuccess(res, {
                 correct: true,
                 score: user.score,
             });
         }
-        return res.status(statusHTTP.SUCCESS).send({
+        return responseSuccess(res, {
             correct: false,
             correctAnswer: question.correctAnswer,
         });
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -160,13 +160,13 @@ const addQuestionsXlsx = async (
         });
         await questionsService.addQuestionsXlsx(newListQuestion);
 
-        return res.status(statusHTTP.SUCCESS).send({
+        return responseSuccess(res, {
             success: true,
             invalid: sumQuestionsInvalid,
             valid: newListQuestion.length,
         });
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 

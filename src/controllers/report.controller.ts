@@ -1,9 +1,9 @@
-import { statusHTTP } from '../config';
-import reportService from '../service/report.service';
-import questionsService from '../service/questions.service';
 import { Request, Response } from 'express';
+import { responseBadRequest, responseSuccess } from '../helpers/response';
 import { RequestUser } from '../domain/common.domain';
 import { IReport } from '../domain/report.domain';
+import questionsService from '../service/questions.service';
+import reportService from '../service/report.service';
 
 const sendReport = async (
     req: RequestUser,
@@ -33,9 +33,9 @@ const sendReport = async (
             };
             result = await reportService.sendReport(payload);
         }
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -46,9 +46,9 @@ const getOneReports = async (
     try {
         const { id } = req.params;
         const result = await reportService.getOneReport(id);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -58,9 +58,9 @@ const getAllReports = async (
 ): Promise<Response> => {
     try {
         const result = await reportService.getAllReports();
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
@@ -68,9 +68,9 @@ const removeReport = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { id } = req.params;
         const result = await reportService.removeReport(id);
-        return res.status(statusHTTP.SUCCESS).send(result);
+        return responseSuccess(res, result);
     } catch (error) {
-        return res.status(statusHTTP.FAIL).send({ error });
+        return responseBadRequest(res, error.message ?? error);
     }
 };
 
