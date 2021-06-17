@@ -29,7 +29,7 @@ const QuestionSchema = new mongoose.Schema(
 );
 
 QuestionSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function (doc: Document, ret: any) {
         ret.id = ret._id;
         delete ret._id;
     },
