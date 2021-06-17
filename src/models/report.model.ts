@@ -1,4 +1,4 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 import { IReport } from '../domain/report.domain';
 
 const ReportSchema = new mongoose.Schema(
@@ -17,7 +17,7 @@ const ReportSchema = new mongoose.Schema(
 );
 
 ReportSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function (doc: Document, ret: any) {
         ret.id = ret._id;
         delete ret._id;
     },
