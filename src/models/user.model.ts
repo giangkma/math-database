@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../domain/auth.domain';
 
@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function (doc: Document, ret: any) {
         ret.id = ret._id;
         delete ret._id;
     },
