@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import xlsx from 'xlsx';
 import { IUser } from '../domain/auth.domain';
@@ -115,10 +116,9 @@ const addQuestionsXlsx = async (
     res: Response,
 ): Promise<Response> => {
     try {
-        const { file } = req;
+        const { file } = req.files as any;
         const { id } = req.params;
-        const path = `${process.cwd()}/questionFile`;
-        const workbook = xlsx.readFile(`${path}/${file.filename}`);
+        const workbook = xlsx.readFile(file.tempFilePath);
         const sheet_name_list = workbook.SheetNames;
         const listQuestion = xlsx.utils.sheet_to_json(
             workbook.Sheets[sheet_name_list[0]],
