@@ -10,8 +10,17 @@ import imageRoute from './routes/image.routes';
 import cors from 'cors';
 import { isAuth } from './middlewares/auth';
 import swaggerDocuments from './swagger';
+import fileupload from 'express-fileupload';
+import cloudinary from 'cloudinary';
 
 dotenv.config();
+
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
+
 const app = express();
 const port = process.env.PORT || 8888;
 
@@ -21,6 +30,11 @@ mongoose.connect(process.env.DB_MONGOO);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(
+    fileupload({
+        useTempFiles: true,
+    }),
+);
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
