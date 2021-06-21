@@ -1,4 +1,4 @@
-import { IUser } from '../domain/auth.domain';
+import { IUser, UpdateProfile } from '../domain/auth.domain';
 import User from '../models/user.model';
 import { roles } from '../config';
 
@@ -38,9 +38,29 @@ const getAllStudents = async (): Promise<IUser[]> => {
     return result;
 };
 
+const updateProfile = async (
+    userId: string,
+    data: UpdateProfile,
+): Promise<IUser> => {
+    const dataForm = {
+        name: data.name,
+    } as UpdateProfile;
+    if (data.avatar) {
+        dataForm.avatar = data.avatar;
+    }
+    const result = await User.findByIdAndUpdate(userId, dataForm, {
+        new: true,
+    });
+    if (!result) {
+        throw 'Đã xảy ra lỗi !';
+    }
+    return result;
+};
+
 export default {
     getUserByUsername,
     getUserById,
     updateScore,
     getAllStudents,
+    updateProfile,
 };
