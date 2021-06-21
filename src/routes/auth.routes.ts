@@ -14,6 +14,8 @@ router.post(
     authController.register,
 );
 
-router.get('/getUserInfo', isAuth, authController.getUserInfo);
+router.get('/get-profile', isAuth, authController.getProfile);
+
+router.put('/update-profile', isAuth, authController.updateProfile);
 
 export default router;
