@@ -7,6 +7,7 @@ export const fillterDataUser = (user: IUser): IUser => {
         role: user.role,
         name: user.name,
         username: user.username,
+        avatar: user.avatar,
     };
     if (user.role === roles.STUDENT) result.score = user.score;
     return result;

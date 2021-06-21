@@ -31,6 +31,10 @@ const UserSchema = new mongoose.Schema(
             type: Array,
             default: [0, 0, 0, 0, 0],
         },
+        avatar: {
+            type: String,
+            default: '',
+        },
     },
     { versionKey: false },
 );
