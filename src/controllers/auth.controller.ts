@@ -7,7 +7,6 @@ import { responseAuthError, responseSuccess } from '../helpers/response';
 import authService from '../service/auth.service';
 import userService from '../service/user.service';
 
-
 // Thời gian sống của token
 const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || '3d';
 
@@ -20,7 +19,7 @@ const accessTokenSecret =
  * @param {*} req
  * @param {*} res
  */
-const login = async (req: Request, res: Response): Promise<void> => {
+const login = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { username, password } = req.body;
         const user: any = await userService.getUserByUsername(username);
@@ -34,16 +33,16 @@ const login = async (req: Request, res: Response): Promise<void> => {
             accessTokenSecret,
             accessTokenLife,
         );
-        responseSuccess(res, {
+        return responseSuccess(res, {
             accessToken,
             information: dataUserFilter,
         });
     } catch (error) {
-        responseAuthError(res, error.message ?? error)
+        return responseAuthError(res, error.message ?? error);
     }
 };
 
-const register = async (req: Request, res: Response): Promise<void> => {
+const register = async (req: Request, res: Response): Promise<Response> => {
     try {
         const result: IUser = await authService.register(req.body);
         const dataUserFilter = fillterDataUser(result);
@@ -52,31 +51,47 @@ const register = async (req: Request, res: Response): Promise<void> => {
             accessTokenSecret,
             accessTokenLife,
         );
-        responseSuccess(res, {
+        return responseSuccess(res, {
             accessToken,
             information: dataUserFilter,
         });
     } catch (error) {
-        responseAuthError(res, error.message ?? error)
+        return responseAuthError(res, error.message ?? error);
     }
 };
 
-const getUserInfo = async (
+const getProfile = async (
     req: RequestUser,
     res: Response,
-): Promise<void> => {
+): Promise<Response> => {
     try {
         const { id } = req.userInfo;
         const user: IUser = await userService.getUserById(id);
         const result: IUser = fillterDataUser(user);
-        responseSuccess(res, result);
+        return responseSuccess(res, result);
     } catch (error) {
-        responseAuthError(res, error.message ?? error)
+        return responseAuthError(res, error.message ?? error);
+    }
+};
+
+const updateProfile = async (
+    req: RequestUser,
+    res: Response,
+): Promise<Response> => {
+    try {
+        const { id } = req.userInfo;
+        const data = req.body;
+        const user: IUser = await userService.updateProfile(id, data);
+        const result: IUser = fillterDataUser(user);
+        return responseSuccess(res, result);
+    } catch (error) {
+        return responseAuthError(res, error.message ?? error);
     }
 };
 
 export default {
     login,
     register,
-    getUserInfo,
+    getProfile,
+    updateProfile,
 };
