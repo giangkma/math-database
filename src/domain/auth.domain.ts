@@ -15,4 +15,10 @@ export interface IUser extends Document {
     password?: string;
     role: roles;
     score?: string[];
+    avatar?: string;
+}
+
+export interface UpdateProfile {
+    name: string;
+    avatar?: string;
 }
