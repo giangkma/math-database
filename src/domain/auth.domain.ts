@@ -15,12 +15,11 @@ export interface IUser extends Document {
     password?: string;
     role: roles;
     score?: string[];
-    avatar: string;
     avatar?: string;
 }
 
 export interface UpdateProfile {
-    name?: string;
+    name: string;
     avatar?: string;
 }
 
