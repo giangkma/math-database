@@ -19,12 +19,13 @@ const getRanksInClass = async (
                     id: student.id,
                     name: student.name,
                     score: student.score[Number(className) - 1],
+                    avatar: student.avatar,
                 });
         });
         result.sort((a: IRank, b: IRank) => Number(b.score) - Number(a.score));
-        return responseSuccess(res, result)
+        return responseSuccess(res, result);
     } catch (error) {
-        return responseAuthError(res, error.message ?? error)
+        return responseAuthError(res, error.message ?? error);
     }
 };
 
