@@ -18,4 +18,6 @@ router.get('/get-profile', isAuth, authController.getProfile);
 
 router.put('/update-profile', isAuth, authController.updateProfile);
 
+router.put('/change-password', isAuth, authController.changePassword);
+
 export default router;

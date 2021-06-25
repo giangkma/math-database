@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IUser } from '../domain/auth.domain';
+import { ChangePassword, IUser } from '../domain/auth.domain';
 import { RequestUser } from '../domain/common.domain';
 import { fillterDataUser } from '../helpers/functions';
 import { generateToken } from '../helpers/jwt';
@@ -89,9 +89,31 @@ const updateProfile = async (
     }
 };
 
+const changePassword = async (
+    req: RequestUser,
+    res: Response,
+): Promise<Response> => {
+    try {
+        const { id } = req.userInfo;
+        const data: ChangePassword = req.body;
+        const user: any = await userService.getUserById(id);
+        if (!user) throw new Error('Người dùng không tồn tại !');
+        if (!(await user.isPasswordMatch(data.password))) {
+            throw new Error('Mật khẩu không đúng !');
+        }
+        await userService.changePassword(id, data.newPassword);
+        return responseSuccess(res, {
+            success: true,
+        });
+    } catch (error) {
+        return responseAuthError(res, error.message ?? error);
+    }
+};
+
 export default {
     login,
     register,
     getProfile,
     updateProfile,
+    changePassword,
 };

@@ -1,6 +1,7 @@
-import { IUser, UpdateProfile } from '../domain/auth.domain';
+import { ChangePassword, IUser, UpdateProfile } from '../domain/auth.domain';
 import User from '../models/user.model';
 import { roles } from '../config';
+import bcrypt from 'bcryptjs';
 
 const getUserByUsername = async (username: string): Promise<IUser> => {
     const result = await User.findOne({ username });
@@ -8,6 +9,11 @@ const getUserByUsername = async (username: string): Promise<IUser> => {
         throw 'Người dùng không tồn tại !';
     }
     return result;
+};
+
+const checkDuplicatedUsername = async (username: string): Promise<boolean> => {
+    const result = await User.findOne({ username });
+    return !!result;
 };
 
 const getUserById = async (id: string): Promise<IUser> => {
@@ -57,10 +63,30 @@ const updateProfile = async (
     return result;
 };
 
+const changePassword = async (
+    userId: string,
+    newPassword: string,
+): Promise<IUser> => {
+    const newPasswordHash = await bcrypt.hash(newPassword, 8);
+    const result = await User.findByIdAndUpdate(
+        userId,
+        { password: newPasswordHash },
+        {
+            new: true,
+        },
+    );
+    if (!result) {
+        throw 'Đã xảy ra lỗi !';
+    }
+    return result;
+};
+
 export default {
     getUserByUsername,
+    checkDuplicatedUsername,
     getUserById,
     updateScore,
     getAllStudents,
     updateProfile,
+    changePassword,
 };
