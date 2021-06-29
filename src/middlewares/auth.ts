@@ -27,7 +27,7 @@ export const isAuth = async (
             throw new Error();
         }
         const bearer = bearerHeader.split(' ');
-        const accessToken = bearer[1];
+        const accessToken = bearer[1] ?? bearer[0];
 
         // Thực hiện giải mã token xem có hợp lệ hay không?
         const decoded = await verifyToken(accessToken, accessTokenSecret);
