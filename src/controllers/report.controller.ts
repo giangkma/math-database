@@ -4,6 +4,7 @@ import { RequestUser } from '../domain/common.domain';
 import { IReport } from '../domain/report.domain';
 import questionsService from '../service/questions.service';
 import reportService from '../service/report.service';
+import userService from '../service/user.service';
 
 const sendReport = async (
     req: RequestUser,
@@ -15,7 +16,8 @@ const sendReport = async (
         if (!question) {
             throw 'Câu hỏi này không tồn tại !';
         }
-        const sender = req.userInfo.name;
+        const senderId = req.userInfo.id;
+        const sender = await userService.getUserById(senderId);
         const reports = (await reportService.getReportByQuestionId(
             questionId,
         )) as IReport[];
@@ -23,12 +25,15 @@ const sendReport = async (
         // reports exists => if this question has been reported before
         if (!!reports.length) {
             const payload = {
-                senders: reports[0].senders.concat(sender),
+                // check sender exists
+                senders: reports[0].senders.find((item) => item === sender.name)
+                    ? reports[0].senders
+                    : reports[0].senders.concat(sender.name),
             };
             result = await reportService.updateReport(reports[0].id, payload);
         } else {
             const payload = {
-                senders: [sender],
+                senders: [sender.name],
                 questionId,
             };
             result = await reportService.sendReport(payload);
