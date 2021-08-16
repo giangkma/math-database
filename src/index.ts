@@ -16,16 +16,16 @@ import cloudinary from 'cloudinary';
 dotenv.config();
 
 cloudinary.v2.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET,
+    cloud_name: process.env.CLOUD_NAME || "math-database",
+    api_key: process.env.API_KEY || "496858915933528",
+    api_secret: process.env.API_SECRET || "THEUtYJ6jx1RTh0yHPiP56Btll0",
 });
 
 const app = express();
 const port = process.env.PORT || 8888;
 
 const version = 'v1';
-mongoose.connect(process.env.DB_MONGOO);
+mongoose.connect(process.env.DB_MONGOO || "mongodb+srv://giangdt:12345az09@cluster0.9mhmb.mongodb.net/math-app-database?retryWrites=true&w=majority");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
