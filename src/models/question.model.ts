@@ -35,6 +35,6 @@ QuestionSchema.set('toJSON', {
     },
 });
 
-const Question: Model<IQuestion> = mongoose.model('Question', QuestionSchema);
+const Question: Model<any> = mongoose.model('Question', QuestionSchema);
 
 export default Question;

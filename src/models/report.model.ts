@@ -23,6 +23,6 @@ ReportSchema.set('toJSON', {
     },
 });
 
-const Report: Model<IReport> = mongoose.model('Report', ReportSchema);
+const Report: Model<any> = mongoose.model('Report', ReportSchema);
 
 export default Report;
