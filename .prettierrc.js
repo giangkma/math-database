@@ -1,4 +1,4 @@
-module.exports = {d
+module.exports = {dd
     parser: 'typescript',
     bracketSpacing: true,
     jsxBracketSameLine: false,
